@@ -90,3 +90,22 @@ function Get-ADOPoolsWithAgents($Headers, [string]$Org, [string]$poolType) {
     }
     return $poolAndAgents
 }
+
+function Get-ADOProjects($Headers, [string]$Org) {
+    $url = "$org/_apis/projects?api-version=5.0"
+    $results = Invoke-RestMethod -Method Get -uri $url -Headers $headers
+    return $results.value
+}
+
+function Get-ADOAllBuilds($Headers, [string]$Org) {
+    $projects = Get-ADOProjects $Headers $Org
+    $ListsOfBuilds = New-Object System.Collections.ArrayList
+    foreach ($project in $projects){
+        $url = "$org/{project}/_apis/build/builds?api-version=5.0"
+        $builds = Invoke-RestMethod -Method Get -uri $url -Headers $headers
+        $ListsOfBuilds.Add($builds) | Out-Null
+    }
+    return $ListsOfBuilds
+}
+
+
